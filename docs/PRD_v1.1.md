@@ -66,5 +66,5 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 ## Phê duyệt
 | Vai trò | Tên | Ngày |
 |---|---|---|
-| Product | (điền) | |
-| Eval owner (giữ gate) | (điền) | |
+| Product | Đoàn Đăng Khoa | 18/11/2026 |
+| Eval owner (giữ gate) | Đoàn Đăng Khoa | 18/11/2026 |
