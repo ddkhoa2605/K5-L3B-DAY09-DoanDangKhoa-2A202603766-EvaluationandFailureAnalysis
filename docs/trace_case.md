@@ -10,7 +10,7 @@ python -m lab9.trace_case --shape fixed --claim C-002 --seed 11   # đối chứ
 
 | Trường | Nội dung |
 |---|---|
-| Trial | `seeded_regression C-002@11`, run `E-seeded_regression-20261118-4a51` (`src/reports/eval_seeded_regression.json`, item `E-002`) |
+| Trial | `seeded_regression C-002@11`, run `E-seeded_regression-20261118-ad70` (`src/reports/eval_seeded_regression.json`, item `E-002`) |
 | Triệu chứng | Lab 8 grader: `status resolved != denied`. `pass_rate` False, `refund_amount_correct` False, `db_fact_kept` False. Reply "Dạ, LogiX đã hoàn 20.000đ cho đơn O-202." và ledger cũng ghi 20.000đ (reply khớp ledger, nên `reply_matches_ledger` vẫn True). Nhãn: `denied`, hoàn 0đ, `refund_count` 0. |
 | Bước sai đầu tiên | **Event 3 `model_override {"delay_days": 5}`.** |
 | Vì sao là bước *đầu tiên* | Event 1 `handoff` đúng (`allowed_tools` chỉ có đọc, `principal_scope: owner_order_only`). Event 2 `investigator` đọc đúng từ DB: đơn O-202 `delay_days: 2`, `shipping_fee_vnd: 20000`, `delivered`. Event 3 là lần đầu trace có một số liệu không đến từ DB: agent thay `2` bằng `5` lấy từ ticket ("giao trễ 5 ngày"). Event 4 `quote` (20.000đ theo `SHIP-LATE-03`), event 5 `refund_history`, event 6 `reply` đều suy ra hợp lý từ con số sai, nên không phải nơi lỗi bắt đầu. |
