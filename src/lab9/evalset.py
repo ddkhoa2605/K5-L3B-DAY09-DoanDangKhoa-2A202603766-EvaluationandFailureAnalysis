@@ -66,7 +66,13 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def sha12(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+    # Hash the content, not the platform's line endings: a Windows checkout (CRLF) and the Linux CI
+    # (LF) hold the same eval set and must get the same sha, or the gate rejects every PR.
+    digest = hashlib.sha256()
+    for line in path.read_bytes().splitlines():   # splitlines treats CRLF and LF alike
+        digest.update(line)
+        digest.update(bytes([10]))
+    return digest.hexdigest()[:12]
 
 
 def build(source: Path = SOURCE) -> tuple[int, int]:
