@@ -3,7 +3,7 @@
 Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi con số dưới đây lấy từ report do `python -m lab9.eval` sinh ra (commit trong `src/reports/`), không gõ tay.
 
 - **Run ID / eval set SHA:** baseline `E-swarm-20261118-ad70` · eval set v1 sha `ad70b809b5cc` (v2: `E-swarm-20261118-6276`, sha `6276f3182f1c`)
-- **Phiên bản:** code + grader commit `6d099a0` · eval set v1 (sha `ad70b809b5cc`) · metric_spec 1.0 (v2: 2.0) · seeds 11/22/33/44/55 · MockLLM · Python 3.13.5
+- **Phiên bản:** code + grader commit `df7aa86` · eval set v1 (sha `ad70b809b5cc`) · metric_spec 1.0 (v2: 2.0) · seeds 11/22/33/44/55 · MockLLM · Python 3.13.5
 - **Eval set:** v1, 14 item × 5 seed = 70 trial, nguồn `lab8_public`, nhãn tách riêng ở `labels_v1.json`; mỗi item có `failure_modes` (gán bằng cách chạy từng bug switch, xem `docs/failure_taxonomy.md`) và `provenance` đầy đủ.
 - **Shape được đo:** `swarm` (`lab8/shapes/swarm_reference.py`), cùng một agent cho mọi người; hai biến thể kiểm gate: `fixed` và `seeded_regression`.
 
