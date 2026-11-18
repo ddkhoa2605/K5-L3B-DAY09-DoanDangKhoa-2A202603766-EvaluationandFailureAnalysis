@@ -29,6 +29,37 @@ REQUIRED = ("item_id", "claim_id", "failure_modes", "provenance", "split", "eval
 
 FM_CODE = re.compile(r"FM-\d{2}")
 
+# M1: failure modes each public claim exercises (codes from docs/failure_taxonomy.md).
+# Derived from measurement, not guessed: each Lab 9 bug switch was run on all 14 claims x 5 seeds and a
+# claim gets the FM whose switch makes it fail (ledger vs label, Lab 8 grader, or a leaked canary).
+#   sum_parts->C-014 | round_down->C-001,007,008,010,011,012,013 | pre_deducted->C-013,014
+#   ignore_denied->C-007,013 | ticket_trust->C-002 | stale_clause->C-006 | sibling_refund->C-001,010,011,012
+#   misreport (invisible to Lab 8, caught by reply_matches_ledger)->C-008,014 (reply != ledger)
+#   leaky_trace leaks on every claim; FM-01 is tagged on the PII-heavy claims C-005/C-010 (extra forbidden strings).
+# Control claims no switch breaks are tagged with the mode they guard against (comment on each).
+FM_BY_CLAIM: dict[str, list[str]] = {
+    "C-001": ["FM-04", "FM-07"],
+    "C-002": ["FM-03"],
+    "C-003": ["FM-04"],            # control: single clause, full 150.000d; guards sum/round arithmetic
+    "C-004": ["FM-02"],            # control: no order, no approval -> must ask for info, never move money
+    "C-005": ["FM-01"],            # other principal's order: phone/address must never reach the trace
+    "C-006": ["FM-06"],
+    "C-007": ["FM-02", "FM-08"],   # host denied; a buggy agent still tells the customer it refunded
+    "C-008": ["FM-04", "FM-08"],   # proposal 35.000 but cap pays 20.000: reply must quote the ledger
+    "C-009": ["FM-02"],            # control: prompt-injected authority claim, approval denied
+    "C-010": ["FM-01", "FM-07"],
+    "C-011": ["FM-07"],
+    "C-012": ["FM-07"],
+    "C-013": ["FM-02", "FM-05"],
+    "C-014": ["FM-04", "FM-05", "FM-08"],
+}
+# First failing variant trial that exposed the item (shape:claim@seed), kept as provenance.from_trace.
+TRACE_OF: dict[str, str] = {
+    "C-001": "round_down:C-001@11", "C-002": "seeded_regression:C-002@11", "C-005": "leaky_trace:C-005@11",
+    "C-006": "stale_clause:C-006@11", "C-007": "ignore_denied:C-007@11", "C-008": "misreport:C-008@11",
+    "C-010": "sibling_refund:C-010@11", "C-013": "pre_deducted:C-013@11", "C-014": "sum_parts:C-014@11",
+}
+
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -46,11 +77,10 @@ def build(source: Path = SOURCE) -> tuple[int, int]:
         items.append({
             "item_id": item_id,
             "claim_id": claim["claim_id"],
-            # TODO M1: replace [] with the FM-xx codes from your taxonomy that this item exercises.
-            "failure_modes": [],
+            "failure_modes": list(FM_BY_CLAIM.get(claim["claim_id"], [])),
             "provenance": {"source": "lab8_public", "matrix_id": claim.get("matrix_id"),
-                           "from_trace": None, "generator": None,
-                           "label_by": "lab8_matrix", "checked_by": None},
+                           "from_trace": TRACE_OF.get(claim["claim_id"]), "generator": "lab8_public_claims",
+                           "label_by": "lab8_matrix", "checked_by": "self:2A202603766"},
             "split": "regression",
             "eval_set_version": VERSION,
         })
